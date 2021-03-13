@@ -11,6 +11,7 @@ const fieldRow = 20; // 20 rows in height
 // playing screen size in pixcel
 const screenWitdth = blockSize * fieldCol
 const screenHeight = blockSize * fieldRow
+let speed = 300;
 
 can.width = screenWitdth;
 can.height = screenHeight;
@@ -25,6 +26,7 @@ let tetro = [
 ];
 
 let field = [];
+
 
 // initializing a field 
 const initializeField = () => {
@@ -82,16 +84,12 @@ const checkMovement = (mx, my, newTetro = tetro) => {
     // }
         for (let y = 0; y < tetroSize; y++){
             for (let x = 0; x < tetroSize; x++){
-                let nx = tetroX + x + mx;
-                let ny = tetroY + y + my;
                 if(newTetro[y][x]){
+                    let nx = tetroX + x + mx;
+                    let ny = tetroY + y + my;
                     console.log(ny)
                     console.log(nx)
-                    if(field[ny][nx] ||
-                        ny < 0 ||
-                        nx < 0 ||
-                        ny >= fieldRow ||
-                        nx >= fieldCol){
+                    if(ny < 0 || nx < 0 || ny >= fieldRow || nx >= fieldCol || field[ny][nx]){
                         console.log(ny)
                         console.log(nx)
                         return false;
@@ -114,6 +112,28 @@ const rotateTetro = () => {
     return newTetro;
 }
 
+const fixTetro = () => {
+    for (let y = 0; y < tetroSize; y++){
+        for (let x = 0; x < tetroSize; x++){
+            if(tetro[y][x]){
+                field[tetroY + y][tetroX + x] = 1;
+            }
+        }
+    }
+}
+
+const dropTetro = () => {
+    if (checkMovement(0, 1)){
+        tetroY++
+    } else {
+        fixTetro();
+        tetroX = 0;
+        tetroY = 0;
+    }
+
+    drawField();
+    drawTetro();
+}
 
 initializeField();
 
@@ -122,6 +142,7 @@ field[5][8] = 1;
 
 drawField()
 drawTetro();
+setInterval(dropTetro, speed)
 
 document.onkeydown = (e) => {
     // check key movement 
