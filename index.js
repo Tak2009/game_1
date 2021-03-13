@@ -1,5 +1,5 @@
-let canvas = document.querySelector("#canvas");
-let context = canvas.getContext("2d");
+let can = document.querySelector("#canvas");
+let ctx = can.getContext("2d");
 
 // a square side length
 const blockSize = 30;
@@ -12,12 +12,9 @@ const fieldRow = 20; // 20 rows in height
 const screenWitdth = blockSize * fieldCol
 const screenHeight = blockSize * fieldRow
 
-canvas.width = screenWitdth;
-canvas.height = screenHeight;
-canvas.style.border = "4px solid #555"
-
-// context.fillStyle = "red";
-// context.fillRect(0,0,blockSize,blockSize);
+can.width = screenWitdth;
+can.height = screenHeight;
+can.style.border = "4px solid #555"
 
 // tetromino patterns
 let tetro = [
@@ -41,24 +38,24 @@ const initializeField = () => {
     }
 }
 
-const drawABlock = (x, y) => {
+const drawOneBlock = (x, y) => {
     let px = x * blockSize;
     let py = y * blockSize;
-    context.fillStyle = "blue";
-    context.fillRect(px,py,blockSize,blockSize);
-    context.strokeStyle="black";
-    context.strokeRect(px,py,blockSize,blockSize);
+    ctx.fillStyle = "blue";
+    ctx.fillRect(px,py,blockSize,blockSize);
+    ctx.strokeStyle="black";
+    ctx.strokeRect(px,py,blockSize,blockSize);
 
 }
 
 // display field
 const drawField = () => {
-        context.clearRect(0,0,screenWitdth, screenHeight);
+        ctx.clearRect(0,0,screenWitdth, screenHeight);
     //y 縦軸: 各配列　x 横軸: 各配列の中
         for (let y = 0; y < fieldRow; y++){
             for (let x = 0; x < fieldCol; x++){
                 if(field[y][x]){
-                    drawABlock(x, y)
+                    drawOneBlock(x, y)
                 }
             }
         }
@@ -73,10 +70,48 @@ const drawTetro = () => {
     for (let y = 0; y < tetroSize; y++){
         for (let x = 0; x < tetroSize; x++){
             if(tetro[y][x]){
-                drawABlock(tetroX + x, tetroY + y)
+                drawOneBlock(tetroX + x, tetroY + y)
             }
         }
     }
+}
+
+const checkMovement = (mx, my, newTetro = tetro) => {
+    // if (newTetro == undefined){
+    //     newTetro = tetro
+    // }
+        for (let y = 0; y < tetroSize; y++){
+            for (let x = 0; x < tetroSize; x++){
+                let nx = tetroX + x + mx;
+                let ny = tetroY + y + my;
+                if(newTetro[y][x]){
+                    console.log(ny)
+                    console.log(nx)
+                    if(field[ny][nx] ||
+                        ny < 0 ||
+                        nx < 0 ||
+                        ny >= fieldRow ||
+                        nx >= fieldCol){
+                        console.log(ny)
+                        console.log(nx)
+                        return false;
+                    }
+                }
+            }
+        }
+    
+    return true
+}
+
+const rotateTetro = () => {
+    let newTetro = [];
+    for (let y = 0; y < tetroSize; y++){
+        newTetro[y] = [];
+        for (let x = 0; x < tetroSize; x++){
+            newTetro[y][x] = tetro[tetroSize - 1 - x][y]
+        }
+    }
+    return newTetro;
 }
 
 
@@ -87,31 +122,6 @@ field[5][8] = 1;
 
 drawField()
 drawTetro();
-   
-
-const checkMovement = (mx, my) => {
-    for (let y = 0; y < tetroSize; y++){
-        for (let x = 0; x < tetroSize; x++){
-            let nx = tetroX + x + mx;
-            let ny = tetroY + y + my;
-            if(tetro[y][x]){
-                console.log(ny)
-                console.log(nx)
-                if(field[ny][nx] ||
-                    ny < 0 ||
-                    nx < 0 ||
-                    ny >= fieldRow ||
-                    nx >= fieldCol){
-                    console.log(ny)
-                    console.log(nx)
-                    return false;
-                }
-            }
-        }
-    }
-    return true
-}
-
 
 document.onkeydown = (e) => {
     // check key movement 
@@ -134,6 +144,10 @@ document.onkeydown = (e) => {
         tetroY++;
         break;
         case "Space": //スペース
+        let newTetro = rotateTetro()
+        if (checkMovement(0, 0, newTetro)){
+            tetro = newTetro
+        }
         break;
     }
     drawField()
