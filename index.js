@@ -1,14 +1,14 @@
 let canvas = document.querySelector("#canvas");
 let context = canvas.getContext("2d");
 
-// ブロックの縦横：正方形の一辺
+// a square side length
 const blockSize = 30;
-// テトロミノのサイズ
+// tetromino size
 const tetroSize = 4;
-// フィールドサイズ by Block
-const fieldCol = 10; //横に１０個
-const fieldRow = 20; //縦に２０個
-// スクリーンサイズ
+// field size
+const fieldCol = 10; //10 columns in width
+const fieldRow = 20; // 20 rows in height
+// playing screen size in pixcel
 const screenWitdth = blockSize * fieldCol
 const screenHeight = blockSize * fieldRow
 
@@ -19,41 +19,78 @@ canvas.style.border = "4px solid #555"
 // context.fillStyle = "red";
 // context.fillRect(0,0,blockSize,blockSize);
 
-// テトロミノの本体
+// tetromino patterns
 let tetro = [
     [0,0,0,0], //z
     [1,1,0,0],
     [0,1,1,0],
     [0,0,0,0]
 ];
-// テトロミノの座標
+
+let field = [];
+
+// initializing a field 
+const initializeField = () => {
+    for (let y = 0; y < fieldRow; y++){
+        //inserting rows into field
+        field[y] = [];
+        for (let x = 0; x < fieldCol; x++){
+            //inserting columns into a row array in the above
+            field[y][x] = 0;
+        }
+    }
+}
+
+const drawABlock = (x, y) => {
+    let px = x * blockSize;
+    let py = y * blockSize;
+    context.fillStyle = "blue";
+    context.fillRect(px,py,blockSize,blockSize);
+    context.strokeStyle="black";
+    context.strokeRect(px,py,blockSize,blockSize);
+
+}
+
+// display field
+const drawField = () => {
+        context.clearRect(0,0,screenWitdth, screenHeight);
+    //y 縦軸: 各配列　x 横軸: 各配列の中
+        for (let y = 0; y < fieldRow; y++){
+            for (let x = 0; x < fieldCol; x++){
+                if(field[y][x]){
+                    drawABlock(x, y)
+                }
+            }
+        }
+    }
+
+// tetromino coordinate 
 let tetroX = 0;
 let tetroY = 0;
 
-// テトロミノを表示する関数
+// display tetromino
 const drawTetro = () => {
-
-// 一旦消す
-    context.clearRect(0,0,screenWitdth, screenHeight);
-//y 縦軸: 各配列　x 横軸: 各配列の中
     for (let y = 0; y < tetroSize; y++){
         for (let x = 0; x < tetroSize; x++){
             if(tetro[y][x]){
-                let px = (tetroX + x) * blockSize;
-                let py = (tetroY + y) * blockSize;
-                context.fillStyle = "blue";
-                context.fillRect(px,py,blockSize,blockSize);
-                context.strokeStyle="black";
-                context.strokeRect(px,py,blockSize,blockSize);
+                drawABlock(tetroX + x, tetroY + y)
             }
         }
     }
 }
 
+
+initializeField();
+
+// test data. inserting a block into the initialized field
+field[5][8] = 1;
+
+drawField()
 drawTetro();
+   
 
 document.onkeydown = (e) => {
-    // Code検索
+    // check key movement 
 　console.log(e.code)
     switch(e.code){
         case "ArrowLeft": //左
@@ -71,7 +108,7 @@ document.onkeydown = (e) => {
         case "Space": //スペース
         break;
     }
-
+    drawField()
     drawTetro();
 };
 
