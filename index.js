@@ -89,20 +89,48 @@ drawField()
 drawTetro();
    
 
+const checkMovement = (mx, my) => {
+    for (let y = 0; y < tetroSize; y++){
+        for (let x = 0; x < tetroSize; x++){
+            let nx = tetroX + x + mx;
+            let ny = tetroY + y + my;
+            if(tetro[y][x]){
+                console.log(ny)
+                console.log(nx)
+                if(field[ny][nx] ||
+                    ny < 0 ||
+                    nx < 0 ||
+                    ny >= fieldRow ||
+                    nx >= fieldCol){
+                    console.log(ny)
+                    console.log(nx)
+                    return false;
+                }
+            }
+        }
+    }
+    return true
+}
+
+
 document.onkeydown = (e) => {
     // check key movement 
 　console.log(e.code)
     switch(e.code){
         case "ArrowLeft": //左
+        if (checkMovement(-1, 0))
         tetroX--;
         break;
         case "ArrowUp": //上
+        if (checkMovement(0, -1))
         tetroY--;
         break;
         case "ArrowRight": //右
+        if (checkMovement(1, 0))
         tetroX++;
         break;
         case "ArrowDown": //下
+        if (checkMovement(0, 1))
         tetroY++;
         break;
         case "Space": //スペース
