@@ -1,10 +1,30 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <!-- <meta charset="utf-8"> -->
     <title>テトリスを作ってみる</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="stylesheets/style.css">
   </head>
   <body>
+    <div style="padding-bottom: 0.2px">
+      <form name="musicform" intend >
+        <input id="playbutton" type="button" value="Start BGM" style="position: relative; left: 60px; top: 0px"/>
+        <input id="stopbutton" type="button" value="Stop BGM" style="position: relative; left: 60px; top: 0px"/>
+      </form>
+    </div>
+    <div class="wrapper-container">
+      <span class="tetris-container">
+        <canvas id="canvas" width="250px" height="500px" style="background-color:black;"></canvas>
+          <span class="tetris-panel-container">
+            <p>Next:</p>
+            <canvas id="next" width="150px" height="150px" style="background-color:black;"></canvas>
+            <p>LINES:<span id="lines">0</span></p>
+            <p><span id="message"></span></p>
+            <div class="tetris-panel-container-padding"></div>
+          </span>
+      </span>    
+    </div>  
+
     <canvas id="canvas"></canvas>
     <script type="text/javascript" src="./index.js" defer></script>
   </body>

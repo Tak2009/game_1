@@ -1,0 +1,32 @@
+html {
+     touch-action: manipulation;
+    }
+     
+.wrapper-container {
+    display: inline-block;
+     }
+    
+.tetris-container {
+    display: flex;
+    flex-direction: row;
+    margin: 10px;
+    background-color: #333333;
+}
+   
+.tetris-panel-container {
+    display: flex;
+    padding-left: 10px;
+    padding-right: 10px;
+    flex-direction: column;
+    color: white;
+    background-color: #333333;
+}
+   
+.tetris-panel-container-padding {
+      flex-grow: 1;
+}
+   
+.tetris-panel-container p {
+    margin: 0;
+    padding: 0;
+}

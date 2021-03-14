@@ -1,5 +1,8 @@
 let can = document.querySelector("#canvas");
 let ctx = can.getContext("2d");
+const lines = document.querySelector("#lines");
+const nextCanvas = document.querySelector("#next");
+
 // a square side length
 const blockSize = 30;
 // tetromino size
@@ -13,10 +16,30 @@ const screenHeight = blockSize * fieldRow
 
 can.width = screenWitdth;
 can.height = screenHeight;
-can.style.border = "4px solid #555"
 
 let speed = 300;
 let gameOver = false;
+
+// let audio = document.getElementById("music");
+let audio =  new Audio ("bgm.mp3")
+let audio2 = new Audio ("line_clear.mp3")
+let audio3 = new Audio ("end.mp3")
+
+let buttonStart = document.getElementById("playbutton");
+let buttonStop = document.getElementById("stopbutton");
+
+buttonStart.addEventListener("click", () => {
+  audio.play();
+}, false);
+
+buttonStop.addEventListener("click",() => {
+    audio.pause();
+  }, false);
+
+audio.addEventListener("ended", () => {
+    audio.currentTime = 0;
+    audio.play();
+  }, false);
 
 let colorList = [
     "#000", // for the empty array in tetroList
@@ -74,11 +97,11 @@ let tetroList = [
         [0,0,0,0]
     ]
 ]
-
-let tetroType = Math.floor(Math.random() * (tetroList.length - 1)) + 1
-
+let tetroNext = Math.floor(Math.random() * (tetroList.length - 1)) + 1;
+let tetroType = tetroNext;
 // tetromino
-let tetro = tetroList[tetroType]
+let tetro = tetroList[tetroType];
+
 const startX = fieldCol/2 -tetroSize/2;
 
 let field = [];
@@ -156,11 +179,11 @@ const checkMovement = (mx, my, newTetro = tetro) => {
                 if(newTetro[y][x]){
                     let nx = tetroX + x + mx;
                     let ny = tetroY + y + my;
-                    console.log(ny)
-                    console.log(nx)
+                    // console.log(ny)
+                    // console.log(nx)
                     if(ny < 0 || nx < 0 || ny >= fieldRow || nx >= fieldCol || field[ny][nx]){
-                        console.log(ny)
-                        console.log(nx)
+                        // console.log(ny)
+                        // console.log(nx)
                         return false;
                     }
                 }
@@ -206,14 +229,40 @@ const checkLine = () =>{
         // if a line is filled with blocks
         if (checkFlag){
             lineCount++;
+            lines.innerText = "" + lineCount;
             for (let ny = y; ny > 0; ny--){
                 for (let nx = 0; nx < fieldCol; nx++){
                 field[ny][nx] = field[ny - 1][nx];
                 }
             }
+            audio2.play()
         }
     }
 }
+
+// const clearNextCanvas = (canvas) =>{
+//     let context = canvas.getContect("2D");
+//     context.fillStyle ="rgb(0,0,0)";
+//     context.fillRect(0,0,canavas.width,canvas.height)
+// }
+
+// const drawNextTetro = (next) =>{
+//     clearNextCanvas(next);
+// }
+
+const setTetro = () =>{
+    // tetro type needs resetting for a next tetro
+    tetroType = tetroNext;
+    tetro = tetroList[tetroType];
+    tetroNext = Math.floor(Math.random() * (tetroList.length - 1)) + 1;
+    // reset the coordinate for a new tetro
+    tetroX = startX;
+    tetroY = 0;
+
+    // clearNextCanvas(next);
+    
+}
+
 
 const dropTetro = () => {
     // if gameover = true, no more tetro comes up from the top
@@ -228,26 +277,25 @@ const dropTetro = () => {
         fixTetro();
         // check the line = all filled 
         checkLine();
-        // tetro type needs resetting for a next tetro
-        tetroType = Math.floor(Math.random() * (tetroList.length - 1)) + 1
-        tetro = tetroList[tetroType]
-        // reset the coordinate for a new tetro
-        tetroX = startX;
-        tetroY = 0;
+       
+        setTetro();
+
 
         // game over check
         if(!checkMovement(0, 0)){
             gameOver = true;
+            audio3.play()
+            audio.pause()
         }
 
     }
 
+    
     drawField();
     drawTetro();
 }
 
 initializeField();
-
 // test data. inserting a block into the initialized field
 field[5][8] = 1;
 
@@ -285,6 +333,7 @@ document.onkeydown = (e) => {
         }
         break;
     }
+
     drawField()
     drawTetro();
 };
