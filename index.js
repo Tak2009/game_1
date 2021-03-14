@@ -1,6 +1,8 @@
 let can = document.querySelector("#canvas");
 let ctx = can.getContext("2d");
 const lines = document.querySelector("#lines");
+const totalLineCount = document.querySelector("#total_lines");
+let total = 0;
 const nextCanvas = document.querySelector("#next");
 
 // a square side length
@@ -229,7 +231,9 @@ const checkLine = () =>{
         // if a line is filled with blocks
         if (checkFlag){
             lineCount++;
+            total++
             lines.innerText = "" + lineCount;
+            totalLineCount.innerText = "" + total;
             for (let ny = y; ny > 0; ny--){
                 for (let nx = 0; nx < fieldCol; nx++){
                 field[ny][nx] = field[ny - 1][nx];
