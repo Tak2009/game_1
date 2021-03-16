@@ -1,9 +1,11 @@
-let can = document.querySelector("#canvas");
-let ctx = can.getContext("2d");
+const can = document.querySelector("#canvas");
+const canNext = document.querySelector("#next-screen");
+const ctx = can.getContext("2d");
+const ctxNext = canNext.getContext("2d");
+
 const lines = document.querySelector("#lines");
 const totalLineCount = document.querySelector("#total_lines");
 let total = 0;
-const nextCanvas = document.querySelector("#next");
 
 // a square side length
 const blockSize = 30;
@@ -12,14 +14,18 @@ const tetroSize = 4;
 // field size
 const fieldCol = 10; //10 columns in width
 const fieldRow = 20; // 20 rows in height
+const nextCol = 4;
+const nextRow = 4;
 // playing screen size in pixcel
 const screenWitdth = blockSize * fieldCol
 const screenHeight = blockSize * fieldRow
+const nextScreenWitdth = blockSize * nextCol
+const nextScreenHeight = blockSize * nextRow
 
 can.width = screenWitdth;
 can.height = screenHeight;
 
-let speed = 300;
+let speed = 500;
 let gameOver = false;
 
 // let audio = document.getElementById("music");
@@ -99,14 +105,17 @@ let tetroList = [
         [0,0,0,0]
     ]
 ]
-let tetroNext = Math.floor(Math.random() * (tetroList.length - 1)) + 1;
-let tetroType = tetroNext;
+let tetroNextType = Math.floor(Math.random() * (tetroList.length - 1)) + 1;
+let tetroType = tetroNextType;
 // tetromino
 let tetro = tetroList[tetroType];
+let tetroNext;
 
 const startX = fieldCol/2 -tetroSize/2;
+const nextScreenStartX = nextCol/2 -tetroSize/2;
 
 let field = [];
+let nextScreen = [];
 
 // initializing a field 
 const initializeField = () => {
@@ -118,6 +127,15 @@ const initializeField = () => {
             field[y][x] = 0;
         }
     }
+    for (let y = 0; y < nextRow; y++){
+        //inserting rows into field
+        nextScreen[y] = [];
+        for (let x = 0; x < nextCol; x++){
+            //inserting columns into a row array in the above
+            nextScreen[y][x] = 0;
+        }
+    }
+
 }
 
 const drawOneBlock = (x, y, c) => {
@@ -130,6 +148,15 @@ const drawOneBlock = (x, y, c) => {
 
 }
 
+const drawOneBlockNext = (x, y, c) => {
+    let px = x * blockSize;
+    let py = y * blockSize;
+    ctxNext.fillStyle = colorList[c];
+    ctxNext.fillRect(px,py,blockSize,blockSize);
+    ctxNext.strokeStyle="black";
+    ctxNext.strokeRect(px,py,blockSize,blockSize);
+
+}
 
 const gameOverMessage = (message) => {
     ctx.font = "40px 'MS Gothic'";
@@ -152,7 +179,7 @@ const drawField = () => {
                 }
             }
         }
-    }
+}
 
 // tetromino coordinate 
 let tetroX = startX;
@@ -170,6 +197,18 @@ const drawTetro = () => {
     if (gameOver){
         gameOverMessage("Game Over")
     } 
+}
+
+const drawNext = () => {
+    ctxNext.clearRect(0,0,nextScreenWitdth, nextScreenHeight);
+//y 縦軸: 各配列　x 横軸: 各配列の中
+    for (let y = 0; y < nextRow; y++){
+        for (let x = 0; x < nextCol; x++){
+            if(tetroNext[y][x]){
+                drawOneBlockNext(x, y, tetroNextType)
+            }
+        }
+    }
 }
 
 const checkMovement = (mx, my, newTetro = tetro) => {
@@ -244,36 +283,27 @@ const checkLine = () =>{
     }
 }
 
-// const clearNextCanvas = (canvas) =>{
-//     let context = canvas.getContect("2D");
-//     context.fillStyle ="rgb(0,0,0)";
-//     context.fillRect(0,0,canavas.width,canvas.height)
-// }
-
-// const drawNextTetro = (next) =>{
-//     clearNextCanvas(next);
-// }
 
 const setTetro = () =>{
     // tetro type needs resetting for a next tetro
-    tetroType = tetroNext;
+    tetroType = tetroNextType;
     tetro = tetroList[tetroType];
-    tetroNext = Math.floor(Math.random() * (tetroList.length - 1)) + 1;
+    tetroNextType = Math.floor(Math.random() * (tetroList.length - 1)) + 1;
+    tetroNext = tetroList[tetroNextType];
+    drawNext();
     // reset the coordinate for a new tetro
     tetroX = startX;
     tetroY = 0;
 
-    // clearNextCanvas(next);
+    
     
 }
-
 
 const dropTetro = () => {
     // if gameover = true, no more tetro comes up from the top
     if(gameOver){
         return;
     }
-
     if (checkMovement(0, 1)){
         tetroY++
     } else {
@@ -281,8 +311,8 @@ const dropTetro = () => {
         fixTetro();
         // check the line = all filled 
         checkLine();
-       
         setTetro();
+        
 
 
         // game over check
@@ -294,7 +324,6 @@ const dropTetro = () => {
 
     }
 
-    
     drawField();
     drawTetro();
 }
