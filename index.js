@@ -111,8 +111,8 @@ let tetroType = tetroNextType;
 let tetro = tetroList[tetroType];
 let tetroNext;
 
-const startX = fieldCol/2 -tetroSize/2;
-const nextScreenStartX = nextCol/2 -tetroSize/2;
+const startX = fieldCol/2 - tetroSize/2;
+const nextScreenStartX = nextCol/2
 
 let field = [];
 let nextScreen = [];
@@ -138,23 +138,13 @@ const initializeField = () => {
 
 }
 
-const drawOneBlock = (x, y, c) => {
+const drawOneBlock = (x, y, c, targetCanvas = ctx) => {
     let px = x * blockSize;
     let py = y * blockSize;
-    ctx.fillStyle = colorList[c];
-    ctx.fillRect(px,py,blockSize,blockSize);
-    ctx.strokeStyle="black";
-    ctx.strokeRect(px,py,blockSize,blockSize);
-
-}
-
-const drawOneBlockNext = (x, y, c) => {
-    let px = x * blockSize;
-    let py = y * blockSize;
-    ctxNext.fillStyle = colorList[c];
-    ctxNext.fillRect(px,py,blockSize,blockSize);
-    ctxNext.strokeStyle="black";
-    ctxNext.strokeRect(px,py,blockSize,blockSize);
+    targetCanvas.fillStyle = colorList[c];
+    targetCanvas.fillRect(px,py,blockSize,blockSize);
+    targetCanvas.strokeStyle="black";
+    targetCanvas.strokeRect(px,py,blockSize,blockSize);
 
 }
 
@@ -205,7 +195,7 @@ const drawNext = () => {
     for (let y = 0; y < nextRow; y++){
         for (let x = 0; x < nextCol; x++){
             if(tetroNext[y][x]){
-                drawOneBlockNext(x, y, tetroNextType)
+                drawOneBlock(x, y, tetroNextType, ctxNext)
             }
         }
     }
@@ -290,12 +280,10 @@ const setTetro = () =>{
     tetro = tetroList[tetroType];
     tetroNextType = Math.floor(Math.random() * (tetroList.length - 1)) + 1;
     tetroNext = tetroList[tetroNextType];
-    drawNext();
+    // drawNext();
     // reset the coordinate for a new tetro
     tetroX = startX;
     tetroY = 0;
-
-    
     
 }
 
@@ -312,8 +300,7 @@ const dropTetro = () => {
         // check the line = all filled 
         checkLine();
         setTetro();
-        
-
+        drawNext();
 
         // game over check
         if(!checkMovement(0, 0)){
@@ -323,14 +310,15 @@ const dropTetro = () => {
         }
 
     }
-
+    
     drawField();
     drawTetro();
 }
 
 initializeField();
+
 // test data. inserting a block into the initialized field
-field[5][8] = 1;
+// field[5][8] = 1;
 
 drawField()
 drawTetro();
