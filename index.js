@@ -14,8 +14,8 @@ const tetroSize = 4;
 // field size
 const fieldCol = 10; //10 columns in width
 const fieldRow = 20; // 20 rows in height
-const nextCol = 4;
-const nextRow = 4;
+const nextCol = 5;
+const nextRow = 5;
 // playing screen size in pixcel
 const screenWitdth = blockSize * fieldCol
 const screenHeight = blockSize * fieldRow
@@ -112,7 +112,8 @@ let tetro = tetroList[tetroType];
 let tetroNext;
 
 const startX = fieldCol/2 - tetroSize/2;
-const nextScreenStartX = nextCol/2
+const nextScreenStartX = nextCol/2 - tetroSize/2;
+const nextScreenStartY = nextRow/2 - tetroSize/2;
 
 let field = [];
 let nextScreen = [];
@@ -180,6 +181,7 @@ const drawTetro = () => {
     for (let y = 0; y < tetroSize; y++){
         for (let x = 0; x < tetroSize; x++){
             if(tetro[y][x]){
+                console.log(tetro[y][x])
                 drawOneBlock(tetroX + x, tetroY + y, tetroType)
             }
         }
@@ -192,10 +194,11 @@ const drawTetro = () => {
 const drawNext = () => {
     ctxNext.clearRect(0,0,nextScreenWitdth, nextScreenHeight);
 //y 縦軸: 各配列　x 横軸: 各配列の中
-    for (let y = 0; y < nextRow; y++){
-        for (let x = 0; x < nextCol; x++){
+    for (let y = 0; y < tetroSize; y++){
+        for (let x = 0; x < tetroSize; x++){
             if(tetroNext[y][x]){
-                drawOneBlock(x, y, tetroNextType, ctxNext)
+                console.log(tetroNext[y][x])
+                drawOneBlock(nextScreenStartX + x, nextScreenStartY + y, tetroNextType, ctxNext)
             }
         }
     }
@@ -300,7 +303,7 @@ const dropTetro = () => {
         // check the line = all filled 
         checkLine();
         setTetro();
-        drawNext();
+        // drawNext();
 
         // game over check
         if(!checkMovement(0, 0)){
@@ -308,11 +311,16 @@ const dropTetro = () => {
             audio3.play()
             audio.pause()
         }
-
+        if (gameOver){
+            gameOverMessage("Game Over")
+        } 
+        drawNext();
     }
+        
     
     drawField();
     drawTetro();
+    
 }
 
 initializeField();
