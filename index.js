@@ -29,9 +29,9 @@ let speed = 500;
 let gameOver = false;
 
 // let audio = document.getElementById("music");
-let audio =  new Audio ("bgm.mp3")
-let audio2 = new Audio ("line_clear.mp3")
-let audio3 = new Audio ("end.mp3")
+let audio =  new Audio ("./resources/bgm.mp3")
+let audio2 = new Audio ("./resources/line_clear.mp3")
+let audio3 = new Audio ("./resources/end.mp3")
 
 let buttonStart = document.getElementById("playbutton");
 let buttonStop = document.getElementById("stopbutton");
